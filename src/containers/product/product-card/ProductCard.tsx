@@ -1,8 +1,8 @@
 import React from "react";
-import type { ProductItem } from "../product/types/product.types";
 import { Link, useNavigate } from "react-router-dom";
+import type { ProductItem } from "../../../models/product-item.model";
 
-const Card: React.FC<{ product: ProductItem }> = ({ product }) => {
+const ProductCard: React.FC<{ product: ProductItem }> = ({ product }) => {
   const navigate = useNavigate();
   const truncateText = (text: string, maxLength = 40) => {
     if (!text) return "";
@@ -59,4 +59,4 @@ const Card: React.FC<{ product: ProductItem }> = ({ product }) => {
   );
 };
 
-export default Card;
+export default ProductCard;

@@ -1,4 +1,5 @@
-import type { ProductItem } from '../components/product/types/product.types';
+
+import type { ProductItem } from '../../models/product-item.model';
 import { fetchClient } from './fetchClient';
 
 export const ProductService = {

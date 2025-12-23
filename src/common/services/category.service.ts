@@ -1,5 +1,6 @@
-import type { Category } from '../components/product/types/category.types';
-import type { ProductItem } from '../components/product/types/product.types';
+
+import type { Category } from '../../models/category.model';
+import type { ProductItem } from '../../models/product-item.model';
 import { fetchClient } from './fetchClient';
 
 export const CategoryService = {

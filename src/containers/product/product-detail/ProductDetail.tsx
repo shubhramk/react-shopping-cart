@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import type { ProductItem } from "./types/product.types";
-import { ProductService } from "../../services/product.service";
 import { CircleArrowLeft } from "lucide-react";
+import type { ProductItem } from "../../../models/product-item.model";
+import { http } from "../../../common/services/http.service";
+import { API_BASE_PATH } from "../../../common/constants/constants";
 
-const ProductDetails: React.FC = () => {
+const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
 
   const [product, setProduct] = useState<ProductItem | null>(null);
@@ -13,8 +14,25 @@ const ProductDetails: React.FC = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+   const productDetail = (id:string | undefined)=>{
+    const path = `${API_BASE_PATH}/products`;
+    http.get(path).then((response: {data: ProductItem[]})=>{
+        const detail = (response?.data || []).find(p => p.id === Number(id));
+        if (!detail) {
+          throw new Error("Product not found");
+        }
+        setProduct(detail);
+        setActiveImage(detail?.images?.[0] || "");
+    }).catch((err: any)=>{
+        setError(err.message || "Unable to load product details");
+    }).finally(()=>{
+      setLoading(false);
+    });
+  }
+
+
   useEffect(() => {
-    const fetchProduct = async () => {
+   /* const fetchProduct = async () => {
       try {
         const data = await ProductService.getByIdFromLocal(Number(id));
         console.log("Fetched product:", data);
@@ -29,9 +47,9 @@ const ProductDetails: React.FC = () => {
       } finally {
         setLoading(false);
       }
-    };
+    };*/
 
-    fetchProduct();
+    productDetail(id);
   }, [id]);
 
   if (loading) {
@@ -144,4 +162,4 @@ const ProductDetails: React.FC = () => {
   );
 };
 
-export default ProductDetails;
+export default ProductDetail;

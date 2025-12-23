@@ -1,15 +1,28 @@
 import React, { useEffect, useState } from "react";
-import type { ProductItem } from "./types/product.types";
-import { ProductService } from "../../services/product.service";
-import Card from "../card/Card";
+import ProductCard from "../product-card/ProductCard";
+import type { ProductItem } from "../../../models/product-item.model";
+import { API_BASE_PATH } from "../../../common/constants/constants";
+import { http } from "../../../common/services/http.service";
 
-const Product: React.FC = () => {
+
+const ProductList: React.FC = () => {
   const [products, setProducts] = useState<ProductItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  const productList = ()=>{
+    const path = `${API_BASE_PATH}/products`;
+    http.get(path).then((response: {data: ProductItem[]})=>{
+       setProducts(response.data);
+    }).catch((err: any)=>{
+     setError(err.message || "Something went wrong");
+    }).finally(()=>{
+      setLoading(false);
+    });
+  }
+
   useEffect(() => {
-    const fetchProducts = async () => {
+   /* const fetchProducts = async () => {
       try {
         const data = await ProductService.getAll();
         setProducts(data);
@@ -19,8 +32,9 @@ const Product: React.FC = () => {
         setLoading(false);
       }
     };
+    fetchProducts();*/
 
-    fetchProducts();
+    productList();
   }, []);
 
   const SkeletonCard = () => (
@@ -73,7 +87,7 @@ const Product: React.FC = () => {
 
           {!loading &&
             products.map((product) => (
-              <Card product={product} />
+              <ProductCard product={product} />
             ))}
         </div>
       </div>
@@ -81,4 +95,4 @@ const Product: React.FC = () => {
   );
 };
 
-export default Product;
+export default ProductList;
