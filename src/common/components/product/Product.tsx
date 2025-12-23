@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import type { ProductItem } from "./types/product.types";
+import { ProductService } from "../../services/product.service";
 
 const Product: React.FC = () => {
   const [products, setProducts] = useState<ProductItem[]>([]);
@@ -9,15 +10,7 @@ const Product: React.FC = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch(
-          "https://react-shop-backend-seven.vercel.app/products"
-        );
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch products");
-        }
-
-        const data = await response.json();
+        const data = await ProductService.getAll();
         setProducts(data);
       } catch (err: any) {
         setError(err.message || "Something went wrong");
@@ -58,9 +51,7 @@ const Product: React.FC = () => {
           <h2 className="text-xl font-semibold text-gray-700 mb-2">
             No products found
           </h2>
-          <p className="text-gray-500">
-            Please check back later.
-          </p>
+          <p className="text-gray-500">Please check back later.</p>
         </div>
       </section>
     );
@@ -70,9 +61,7 @@ const Product: React.FC = () => {
     <section className="py-12 bg-gray-50">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-gray-900">
-            Products
-          </h2>
+          <h2 className="text-2xl font-bold text-gray-900">Products</h2>
           <span className="text-sm text-blue-950 cursor-pointer hover:underline">
             View All
           </span>
