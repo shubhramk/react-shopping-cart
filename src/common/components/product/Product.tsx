@@ -73,7 +73,7 @@ const Product: React.FC = () => {
           <h2 className="text-2xl font-bold text-gray-900">
             Products
           </h2>
-          <span className="text-sm text-indigo-600 cursor-pointer hover:underline">
+          <span className="text-sm text-blue-950 cursor-pointer hover:underline">
             View All
           </span>
         </div>
@@ -103,12 +103,12 @@ const Product: React.FC = () => {
                 </h3>
 
                 <div className="flex items-center gap-2 mb-4">
-                  <span className="text-lg font-bold text-indigo-600">
+                  <span className="text-lg font-bold text-blue-900">
                     ${product.price}
                   </span>
                 </div>
 
-                <button className="w-full text-sm font-medium border border-indigo-600 text-indigo-600 rounded-md py-2 hover:bg-indigo-600 hover:text-white transition">
+                <button className="w-full text-sm font-medium border border-blue-900 text-blue-900 rounded-md py-2 hover:bg-blue-900 hover:text-white transition">
                   Add to Cart
                 </button>
               </div>
