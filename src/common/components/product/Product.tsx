@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from "react";
 import type { ProductItem } from "./types/product.types";
 import { ProductService } from "../../services/product.service";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Product: React.FC = () => {
   const [products, setProducts] = useState<ProductItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const truncateText = (text: string, maxLength = 40) => {
+    if (!text) return "";
+    return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
+  };
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -66,7 +70,7 @@ const Product: React.FC = () => {
           <h2 className="text-2xl font-bold text-gray-900">Products</h2>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" >
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {loading &&
             Array.from({ length: 4 }).map((_, index) => (
               <SkeletonCard key={index} />
@@ -91,9 +95,28 @@ const Product: React.FC = () => {
                   {product.title}
                 </h3>
 
+                <div className="text-xs text-gray-800 mb-2">
+                  {truncateText(product.description)}{" "}
+                  {product.description.length > 40 && (
+                    <Link
+                      to={`/products/${product.id}`}
+                      className="inline-flex items-center gap-1 text-xs font-semibold text-blue-900 
+                 hover:text-blue-700 transition-colors"
+                    >
+                      Read more
+                    </Link>
+                  )}
+                </div>
+
                 <div className="flex items-center gap-2 mb-4">
                   <span className="text-lg font-bold text-blue-900">
                     ${product.price}
+                  </span>
+                </div>
+
+                <div className="mb-6">
+                  <span className="inline-block text-xs font-medium bg-gray-300 text-gray-700 border border-gray-700 px-3 py-2 rounded-full">
+                    {product.category.name}
                   </span>
                 </div>
 
