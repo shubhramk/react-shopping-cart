@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from "react";
 import type { ProductItem } from "./types/product.types";
 import { ProductService } from "../../services/product.service";
-import { useNavigate } from "react-router-dom";
+import Card from "../card/Card";
 
 const Product: React.FC = () => {
   const [products, setProducts] = useState<ProductItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -66,7 +65,7 @@ const Product: React.FC = () => {
           <h2 className="text-2xl font-bold text-gray-900">Products</h2>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" >
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {loading &&
             Array.from({ length: 4 }).map((_, index) => (
               <SkeletonCard key={index} />
@@ -74,33 +73,7 @@ const Product: React.FC = () => {
 
           {!loading &&
             products.map((product) => (
-              <div
-                key={product.id}
-                onClick={() => navigate(`/products/${product.id}`)}
-                className="bg-white border rounded-xl p-4 shadow-sm hover:shadow-md transition"
-              >
-                <div className="bg-gray-100 rounded-lg h-40 flex items-center justify-center mb-4">
-                  <img
-                    src={product.images?.[0]}
-                    alt={product.title}
-                    className="h-full object-contain"
-                  />
-                </div>
-
-                <h3 className="text-sm font-semibold text-gray-800 mb-2 line-clamp-2">
-                  {product.title}
-                </h3>
-
-                <div className="flex items-center gap-2 mb-4">
-                  <span className="text-lg font-bold text-blue-900">
-                    ${product.price}
-                  </span>
-                </div>
-
-                <button className="w-full text-sm font-medium border border-blue-900 text-blue-900 rounded-md py-2 hover:bg-blue-900 hover:text-white transition">
-                  Add to Cart
-                </button>
-              </div>
+              <Card product={product} />
             ))}
         </div>
       </div>
