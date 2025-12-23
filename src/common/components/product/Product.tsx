@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import type { ProductItem } from "./types/product.types";
 import { ProductService } from "../../services/product.service";
+import { useNavigate } from "react-router-dom";
 
 const Product: React.FC = () => {
   const [products, setProducts] = useState<ProductItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -62,12 +64,9 @@ const Product: React.FC = () => {
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-gray-900">Products</h2>
-          <span className="text-sm text-blue-950 cursor-pointer hover:underline">
-            View All
-          </span>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" >
           {loading &&
             Array.from({ length: 4 }).map((_, index) => (
               <SkeletonCard key={index} />
@@ -77,6 +76,7 @@ const Product: React.FC = () => {
             products.map((product) => (
               <div
                 key={product.id}
+                onClick={() => navigate(`/products/${product.id}`)}
                 className="bg-white border rounded-xl p-4 shadow-sm hover:shadow-md transition"
               >
                 <div className="bg-gray-100 rounded-lg h-40 flex items-center justify-center mb-4">

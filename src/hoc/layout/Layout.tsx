@@ -1,12 +1,12 @@
 import React, { type ReactNode } from "react";
 import Header from "../../common/components/header/Header";
-import Product from "../../common/components/product/Product";
+import { Outlet } from "react-router-dom";
 // import Footer from "../../common/components/footer/Footer";
 interface LayoutProps {
   children?: ReactNode;
 }
 
-const Layout: React.FC<LayoutProps> = ({ children }) => {
+const Layout: React.FC<LayoutProps> = () => {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <header className="w-full bg-white shadow-md">
@@ -14,8 +14,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <Header />
         </div>
       </header>
-      <Product />
-      <main>{children}</main>
+      <main className="flex-1">
+        <Outlet />
+      </main>
 
       {/* <Footer /> */}
     </div>
