@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Search } from "lucide-react";
 import { CategoryService } from "../../services/category.service";
-import type { Category } from "../product/types/category.types";
+import type { Category } from "../../../models/category.model";
 
 const SearchBar: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -29,6 +29,7 @@ const SearchBar: React.FC = () => {
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
+            className="w-full bg-gray-100 text-sm font-medium text-gray-800 px-4 py-2 rounded-full cursor-pointer appearance-none focus:outline-none focus:bg-gray-200 hover:bg-gray-200 transition-colors"
           >
             <option value="all">All Categories</option>
             {categories.map((cat) => (

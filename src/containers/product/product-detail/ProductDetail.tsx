@@ -85,8 +85,8 @@ const ProductDetail: React.FC = () => {
       <div className="container mx-auto px-4">
         <div className="flex justify-end mb-4">
           <button
-            onClick={() => navigate("/")}
-            className="inline-flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-blue-900"
+            onClick={() => navigate("/products")}
+            className="inline-flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-blue-900 cursor-pointer"
           >
             <CircleArrowLeft /> Back
           </button>
