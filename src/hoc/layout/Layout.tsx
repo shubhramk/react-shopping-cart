@@ -1,7 +1,7 @@
 import React, { type ReactNode } from "react";
 import Header from "../../common/components/header/Header";
 import { Outlet } from "react-router-dom";
-// import Footer from "../../common/components/footer/Footer";
+import Footer from "../../common/components/footer/Footer";
 interface LayoutProps {
   children?: ReactNode;
 }
@@ -18,7 +18,7 @@ const Layout: React.FC<LayoutProps> = () => {
         <Outlet />
       </main>
 
-      {/* <Footer /> */}
+      <Footer />
     </div>
   );
 };

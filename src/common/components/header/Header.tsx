@@ -9,7 +9,7 @@ const Header: React.FC = () => {
   
   return (
     <div className="flex items-center justify-between px-6 py-4">
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 cursor-pointer ">
         <img src={logo} alt="FoodMart" className="h-10 w-auto" onClick={() => navigate("/")} />
       </div>
       <div className="hidden lg:flex flex-1 justify-center px-8">
