@@ -3,9 +3,11 @@ import { Search } from "lucide-react";
 import { CategoryService } from "../../services/category.service";
 import type { Category } from "../../../models/category.model";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import type { AppDispatch, RootState } from "../../../store";
+import { fetchProducts } from "../../../store/products.slice";
 
 const SearchBar: React.FC = () => {
-  const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string | number>(
     "all"
   );
@@ -13,6 +15,18 @@ const SearchBar: React.FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const location = useLocation();
+  const categories = useSelector((state: RootState) => {
+     const uniqueMap = new Map<number, Category>();
+      state?.products.list.forEach((product: { category: Category }) => {
+        if (product.category && product.category.id) {
+          uniqueMap.set(product.category.id, product.category);
+        }
+      });
+
+      const categories = Array.from(uniqueMap.values());
+      return categories;
+  });
+  const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
     const query = new URLSearchParams(location.search);
@@ -49,17 +63,11 @@ const SearchBar: React.FC = () => {
     updateParams(query, selectedCategory);
   };
 
+
   useEffect(() => {
-    const loadCategories = async () => {
-      try {
-        const data = await CategoryService.getCategories();
-        setCategories(data);
-      } catch (error) {
-        console.error("Failed to load categories", error);
-      }
-    };
-    loadCategories();
-  }, []);
+    dispatch(fetchProducts());
+  },[]);
+
 
   return (
     <div className="w-full max-w-3xl">

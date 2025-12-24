@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import ProductCard from "../product-card/ProductCard";
-import type { ProductItem } from "../../../models/product-item.model";
-import { API_BASE_PATH } from "../../../common/constants/constants";
-import { http } from "../../../common/services/http.service";
 import { useLocation, useNavigate } from "react-router-dom";
 import { AlertTriangle, SearchX } from "lucide-react";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../../store";
 
 const ProductList: React.FC = () => {
   const location = useLocation();
@@ -14,43 +13,26 @@ const ProductList: React.FC = () => {
   const searchQuery = queryParams.get("search") || "";
   const categoryId = queryParams.get("category") || "";
 
-  const [products, setProducts] = useState<ProductItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+   const products = useSelector((state: RootState) => {
+     let filteredProducts = state.products.list;
+     // 🔍 Search filter
+     if (searchQuery) {
+       const query = searchQuery.toLowerCase();
+       filteredProducts = filteredProducts.filter((product) =>
+         product.title.toLowerCase().includes(query)
+       );
+     }
 
-  useEffect(() => {
-    setLoading(true);
-
-    http
-      .get(`${API_BASE_PATH}/products`)
-      .then((response: { data: ProductItem[] }) => {
-        const allProducts = response.data ?? [];
-        let filteredProducts = allProducts;
-
-        // 🔍 Search filter
-        if (searchQuery) {
-          const query = searchQuery.toLowerCase();
-          filteredProducts = filteredProducts.filter((product) =>
-            product.title.toLowerCase().includes(query)
-          );
-        }
-
-        // 🗂 Category filter
-        if (categoryId) {
-          filteredProducts = filteredProducts.filter(
-            (product) => Number(product.category?.id) === Number(categoryId)
-          );
-        }
-
-        setProducts(filteredProducts);
-      })
-      .catch((err: any) => {
-        setError(err.message || "Unable to load products");
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, [searchQuery, categoryId]);
+     // 🗂 Category filter
+     if (categoryId) {
+       filteredProducts = filteredProducts.filter(
+         (product) => Number(product.category?.id) === Number(categoryId)
+       );
+     }
+     return filteredProducts;
+   });
+   const loading = useSelector((state: RootState) => state.products.loading);
+   const error = useSelector((state: RootState) => state.products.error);
 
   const SkeletonCard = () => (
     <div className="bg-white border rounded-xl p-4 shadow-sm animate-pulse">
@@ -61,7 +43,7 @@ const ProductList: React.FC = () => {
     </div>
   );
 
-  if (error) {
+  if (error && !loading) {
     return (
       <section className="py-20 bg-gray-50">
         <div className="container mx-auto px-4">

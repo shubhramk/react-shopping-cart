@@ -1,44 +1,23 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { CircleArrowLeft } from "lucide-react";
-import type { ProductItem } from "../../../models/product-item.model";
-import { http } from "../../../common/services/http.service";
-import { API_BASE_PATH } from "../../../common/constants/constants";
 import ProductQuantity from "../product-card/ProductQuantity";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../../store";
+import type { ProductItem } from "../../../models/product-item.model";
 
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-
-  const [product, setProduct] = useState<ProductItem | null>(null);
-  const [activeImage, setActiveImage] = useState<string>("");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
   const navigate = useNavigate();
   const [quantity, setQuantity] = useState(1);
-
-  const productDetail = (id: string | undefined) => {
-    const path = `${API_BASE_PATH}/products`;
-    http
-      .get(path)
-      .then((response: { data: ProductItem[] }) => {
-        const detail = (response?.data || []).find((p) => p.id === Number(id));
-        if (!detail) {
-          throw new Error("Product not found");
-        }
-        setProduct(detail);
-        setActiveImage(detail?.images?.[0] || "");
-      })
-      .catch((err: any) => {
-        setError(err.message || "Unable to load product details");
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  };
-
-  useEffect(() => {
-    productDetail(id);
-  }, [id]);
+  const product = useSelector((state: RootState) => {
+    return state?.products.list.find(
+      (product: ProductItem) => Number(product.id) === Number(id)
+    );
+  });
+  const [activeImage, setActiveImage] = useState<string>(product?.images?.[0] || "");
+  const loading = useSelector((state: RootState) => state.products.loading);
+  const error = useSelector((state: RootState) => state.products.error);
 
   if (loading) {
     return (
@@ -57,7 +36,7 @@ const ProductDetail: React.FC = () => {
     );
   }
 
-  if (error || !product) {
+  if ((error || !product) && !loading) {
     return (
       <section className="py-12 bg-gray-50 text-center">
         <h2 className="text-xl font-semibold text-red-600 mb-2">
@@ -84,14 +63,14 @@ const ProductDetail: React.FC = () => {
           <div className="bg-white border rounded-xl p-6">
             <div className="flex items-center justify-center h-96 bg-gray-100 rounded-lg mb-4">
               <img
-                src={activeImage}
-                alt={product.title}
+                src={activeImage || product?.images?.[0]}
+                alt={product?.title}
                 className="max-h-full object-contain"
               />
             </div>
 
             <div className="flex gap-3 overflow-x-auto">
-              {product.images?.map((img, index) => (
+              {product?.images?.map((img, index) => (
                 <button
                   key={index}
                   onClick={() => setActiveImage(img)}
