@@ -13,7 +13,6 @@ const ProductCard: React.FC<{ product: ProductItem }> = ({ product }) => {
   
   return (
     <div
-      key={product.id}
       className="bg-white border rounded-xl p-4 shadow-sm hover:shadow-md transition"
     >
       <div
