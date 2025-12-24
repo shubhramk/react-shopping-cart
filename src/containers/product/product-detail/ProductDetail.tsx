@@ -4,6 +4,7 @@ import { CircleArrowLeft } from "lucide-react";
 import type { ProductItem } from "../../../models/product-item.model";
 import { http } from "../../../common/services/http.service";
 import { API_BASE_PATH } from "../../../common/constants/constants";
+import ProductQuantity from "../product-card/ProductQuantity";
 
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -13,42 +14,29 @@ const ProductDetail: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const [quantity, setQuantity] = useState(1);
 
-   const productDetail = (id:string | undefined)=>{
+  const productDetail = (id: string | undefined) => {
     const path = `${API_BASE_PATH}/products`;
-    http.get(path).then((response: {data: ProductItem[]})=>{
-        const detail = (response?.data || []).find(p => p.id === Number(id));
+    http
+      .get(path)
+      .then((response: { data: ProductItem[] }) => {
+        const detail = (response?.data || []).find((p) => p.id === Number(id));
         if (!detail) {
           throw new Error("Product not found");
         }
         setProduct(detail);
         setActiveImage(detail?.images?.[0] || "");
-    }).catch((err: any)=>{
+      })
+      .catch((err: any) => {
         setError(err.message || "Unable to load product details");
-    }).finally(()=>{
-      setLoading(false);
-    });
-  }
-
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
 
   useEffect(() => {
-   /* const fetchProduct = async () => {
-      try {
-        const data = await ProductService.getByIdFromLocal(Number(id));
-        console.log("Fetched product:", data);
-        if (!data) {
-          throw new Error("Product not found");
-        }
-
-        setProduct(data);
-        setActiveImage(data.images?.[0] || "");
-      } catch (err: any) {
-        setError(err.message || "Unable to load product details");
-      } finally {
-        setLoading(false);
-      }
-    };*/
-
     productDetail(id);
   }, [id]);
 
@@ -93,9 +81,7 @@ const ProductDetail: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-          {/* Image Gallery */}
           <div className="bg-white border rounded-xl p-6">
-            {/* Main Image */}
             <div className="flex items-center justify-center h-96 bg-gray-100 rounded-lg mb-4">
               <img
                 src={activeImage}
@@ -104,7 +90,6 @@ const ProductDetail: React.FC = () => {
               />
             </div>
 
-            {/* Thumbnails */}
             <div className="flex gap-3 overflow-x-auto">
               {product.images?.map((img, index) => (
                 <button
@@ -133,7 +118,7 @@ const ProductDetail: React.FC = () => {
             </h1>
 
             <p className="text-xl font-semibold text-blue-900 mb-4">
-              ${product.price}
+              ${(product.price * quantity).toFixed(2)}
             </p>
 
             <p className="text-gray-600 mb-6 leading-relaxed">
@@ -146,12 +131,28 @@ const ProductDetail: React.FC = () => {
               </span>
             </div>
 
-            <div className="flex gap-4">
-              <button className="flex-1 border border-blue-900 text-blue-900 py-3 rounded-md font-medium hover:bg-blue-900 hover:text-white transition">
+            <div className="mt-6 pb-6 border-b">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-gray-700">
+                  Quantity
+                </span>
+
+                <ProductQuantity value={quantity} onChange={setQuantity} />
+              </div>
+            </div>
+
+            <div className="mt-6 flex gap-4">
+              <button
+                className="flex-1 border-2 border-blue-900 text-blue-900 py-3 rounded-lg
+               font-semibold hover:bg-blue-900 hover:text-white transition"
+              >
                 Add to Cart
               </button>
 
-              <button className="flex-1 bg-blue-900 text-white py-3 rounded-md font-medium hover:bg-blue-800 transition">
+              <button
+                className="flex-1 bg-blue-900 text-white py-3 rounded-lg font-semibold
+               hover:bg-blue-800 transition"
+              >
                 Buy Now
               </button>
             </div>

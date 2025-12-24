@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import type { ProductItem } from "../../../models/product-item.model";
+import ProductQuantity from "./ProductQuantity";
 
 const ProductCard: React.FC<{ product: ProductItem }> = ({ product }) => {
   const navigate = useNavigate();
@@ -8,14 +9,17 @@ const ProductCard: React.FC<{ product: ProductItem }> = ({ product }) => {
     if (!text) return "";
     return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
   };
-
+  const [quantity, setQuantity] = useState(1);
+  
   return (
     <div
       key={product.id}
-      onClick={() => navigate(`/products/${product.id}`)}
       className="bg-white border rounded-xl p-4 shadow-sm hover:shadow-md transition"
     >
-      <div className="bg-gray-100 rounded-lg h-40 flex items-center justify-center mb-4">
+      <div
+        className="bg-gray-100 rounded-lg h-40 flex items-center justify-center mb-4 cursor-pointer"
+        onClick={() => navigate(`/products/${product.id}`)}
+      >
         <img
           src={product.images?.[0]}
           alt={product.title}
@@ -42,7 +46,7 @@ const ProductCard: React.FC<{ product: ProductItem }> = ({ product }) => {
 
       <div className="flex items-center gap-2 mb-4">
         <span className="text-lg font-bold text-blue-900">
-          ${product.price}
+          ${(product.price * quantity).toFixed(2)}
         </span>
       </div>
 
@@ -52,9 +56,16 @@ const ProductCard: React.FC<{ product: ProductItem }> = ({ product }) => {
         </span>
       </div>
 
-      <button className="w-full text-sm font-medium border border-blue-900 text-blue-900 rounded-md py-2 hover:bg-blue-900 hover:text-white transition">
-        Add to Cart
-      </button>
+      <div className="mt-4 pb-4 flex items-center gap-3">
+        <ProductQuantity value={quantity} onChange={setQuantity} />
+
+        <button
+          className="flex-1 h-10 rounded-lg border border-blue-900 text-blue-900
+               text-sm font-semibold hover:bg-blue-900 hover:text-white transition"
+        >
+          Add to Cart
+        </button>
+      </div>
     </div>
   );
 };
