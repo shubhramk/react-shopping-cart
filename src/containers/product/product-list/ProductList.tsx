@@ -125,7 +125,7 @@ const ProductList: React.FC = () => {
             ))}
 
           {!loading &&
-            products.map((product) => <ProductCard product={product} />)}
+            products.map((product) => <ProductCard key={product.id} product={product} />)}
         </div>
       </div>
     </section>
