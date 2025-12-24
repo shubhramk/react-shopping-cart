@@ -14,17 +14,17 @@ const SearchBar: React.FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const location = useLocation();
-  const categories = useSelector((state: RootState) => {
-     const uniqueMap = new Map<number, Category>();
-      state?.products.list.forEach((product: { category: Category }) => {
-        if (product.category && product.category.id) {
-          uniqueMap.set(product.category.id, product.category);
-        }
-      });
+  const productsList = useSelector((state: RootState) => state?.products.list);
+  const categories = React.useMemo(() => {
+    const uniqueMap = new Map<number, Category>();
+    productsList?.forEach((product: { category: Category } | any) => {
+      if (product?.category?.id) {
+        uniqueMap.set(product.category.id, product.category);
+      }
+    });
 
-      const categories = Array.from(uniqueMap.values());
-      return categories;
-  });
+    return Array.from(uniqueMap.values());
+  }, [productsList]);
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
