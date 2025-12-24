@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Search } from "lucide-react";
-import { CategoryService } from "../../services/category.service";
 import type { Category } from "../../../models/category.model";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";

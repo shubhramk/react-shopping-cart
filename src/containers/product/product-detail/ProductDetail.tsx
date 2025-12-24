@@ -93,20 +93,20 @@ const ProductDetail: React.FC = () => {
 
           <div className="bg-white border rounded-xl p-6 shadow-sm">
             <h1 className="text-2xl font-bold text-gray-900 mb-4">
-              {product.title}
+              {product?.title}
             </h1>
 
             <p className="text-xl font-semibold text-blue-900 mb-4">
-              ${(product.price * quantity).toFixed(2)}
+              ${(product?.price * quantity).toFixed(2)}
             </p>
 
             <p className="text-gray-600 mb-6 leading-relaxed">
-              {product.description}
+              {product?.description}
             </p>
 
             <div className="mb-6">
               <span className="inline-block text-xs font-medium bg-gray-300 text-gray-700 border border-gray-700 px-3 py-2 rounded-full">
-                {product.category.name}
+                {product?.category.name}
               </span>
             </div>
 
