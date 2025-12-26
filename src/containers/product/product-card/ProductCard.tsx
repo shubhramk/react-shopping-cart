@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useReducer, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import type { ProductCardProps } from "../../../models/product-item.model";
 import ProductQuantity from "./ProductQuantity";
@@ -7,8 +7,28 @@ import { CartService } from "../../../common/services/cart.service";
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const navigate = useNavigate();
+  /* This state manages the quantity of the product to be added to the cart */
   const [quantity, setQuantity] = useState<number>(1);
 
+  //START - different approach using useReducer - START
+  const quantityReducer = (state: { count: number }, action: { type: string }) => {
+    switch (action.type) {
+      case 'increment':
+        return { count: state.count + 1 };
+
+      case 'decrement':
+        return { count: state.count - 1 };
+
+      case 'reset':
+        return { count: 0 };
+
+      default:
+        return state;
+    }
+  }
+  const [quantityCnt, dispatch] = useReducer(quantityReducer, { count: 1 });
+  //END - different approach using useReducer - END
+  
   const truncateText = (text: string, maxLength = 40) =>
     text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
 
@@ -50,6 +70,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         <span className="text-lg font-bold text-blue-900">
           ${(product.price * quantity).toFixed(2)}
         </span>
+         <span className="text-lg font-bold text-blue-900">
+          ${(product.price * quantityCnt?.count).toFixed(2)}
+        </span>
       </div>
 
       <div className="mb-6">
@@ -59,7 +82,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       </div>
 
       <div className="mt-4 pb-4 flex items-center gap-3">
-        <ProductQuantity value={quantity} onChange={setQuantity} />
+        <ProductQuantity value={quantity} onQuantityChange={dispatch} onChange={setQuantity} />
 
         <button
           onClick={handleAddToCart}

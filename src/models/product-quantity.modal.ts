@@ -3,4 +3,5 @@ export interface ProductQuantityProps {
   min?: number;
   max?: number;
   onChange?: (value: number) => void;
+  onQuantityChange?: (action: { type: string }) => void;
 }
