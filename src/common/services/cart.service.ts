@@ -14,15 +14,23 @@ export class CartService {
     localStore.set(CART_KEY, JSON.stringify(cart));
   }
 
+  static getItemQuantity(productId: number): number {
+    const cart = this.getCart();
+    const item = cart.find((i) => i.product.id === productId);
+    return item?.quantity ?? 1;
+  }
+
   static addToCart(product: ProductItem, quantity: number): CartItem[] {
     const cart = this.getCart();
 
-    const existingItem = cart.find(
-      (item) => item.product.id === product.id
-    );
+    const index = cart.findIndex((item) => item.product.id === product.id);
 
-    if (existingItem) {
-      existingItem.quantity += quantity;
+    if (index > -1) {
+      // ✅ Replace quantity with latest selected value
+      cart[index] = {
+        ...cart[index],
+        quantity,
+      };
     } else {
       cart.push({ product, quantity });
     }

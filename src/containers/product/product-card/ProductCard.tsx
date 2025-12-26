@@ -5,7 +5,6 @@ import ProductQuantity from "./ProductQuantity";
 import { CartService } from "../../../common/services/cart.service";
 
 
-
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const navigate = useNavigate();
   const [quantity, setQuantity] = useState<number>(1);
