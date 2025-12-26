@@ -7,32 +7,36 @@ import type { RootState } from "../../../store";
 
 const ProductList: React.FC = () => {
   const location = useLocation();
-  const navigate = useNavigate();
   const queryParams = new URLSearchParams(location.search);
+  const navigate = useNavigate();
 
   const searchQuery = queryParams.get("search") || "";
   const categoryId = queryParams.get("category") || "";
 
-   const products = useSelector((state: RootState) => {
-     let filteredProducts = state.products.list;
-     // 🔍 Search filter
-     if (searchQuery) {
-       const query = searchQuery.toLowerCase();
-       filteredProducts = filteredProducts.filter((product) =>
-         product.title.toLowerCase().includes(query)
-       );
-     }
+  const { list, loading, error } = useSelector(
+    (state: RootState) => state.products
+  );
 
-     // 🗂 Category filter
-     if (categoryId) {
-       filteredProducts = filteredProducts.filter(
-         (product) => Number(product.category?.id) === Number(categoryId)
-       );
-     }
-     return filteredProducts;
-   });
-   const loading = useSelector((state: RootState) => state.products.loading);
-   const error = useSelector((state: RootState) => state.products.error);
+  const products = React.useMemo(() => {
+    let filtered = list;
+
+    // 🔍 Search filter
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter((product) =>
+        product.title.toLowerCase().includes(query)
+      );
+    }
+
+    // 🗂 Category filter
+    if (categoryId) {
+      filtered = filtered.filter(
+        (product) => Number(product.category?.id) === Number(categoryId)
+      );
+    }
+
+    return filtered;
+  }, [list, searchQuery, categoryId]);
 
   const SkeletonCard = () => (
     <div className="bg-white border rounded-xl p-4 shadow-sm animate-pulse">
@@ -125,7 +129,9 @@ const ProductList: React.FC = () => {
             ))}
 
           {!loading &&
-            products.map((product) => <ProductCard key={product.id} product={product} />)}
+            products.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
         </div>
       </div>
     </section>

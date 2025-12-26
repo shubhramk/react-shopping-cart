@@ -18,6 +18,7 @@ const ProductDetail: React.FC = () => {
   const [activeImage, setActiveImage] = useState<string>(product?.images?.[0] || "");
   const loading = useSelector((state: RootState) => state.products.loading);
   const error = useSelector((state: RootState) => state.products.error);
+  const totalPrice = product ? product.price * quantity : 0;
 
   if (loading) {
     return (
@@ -97,7 +98,7 @@ const ProductDetail: React.FC = () => {
             </h1>
 
             <p className="text-xl font-semibold text-blue-900 mb-4">
-              ${(product?.price * quantity).toFixed(2)}
+              ${totalPrice.toFixed(2)}
             </p>
 
             <p className="text-gray-600 mb-6 leading-relaxed">
@@ -106,7 +107,7 @@ const ProductDetail: React.FC = () => {
 
             <div className="mb-6">
               <span className="inline-block text-xs font-medium bg-gray-300 text-gray-700 border border-gray-700 px-3 py-2 rounded-full">
-                {product?.category.name}
+                {product?.category?.name}
               </span>
             </div>
 
