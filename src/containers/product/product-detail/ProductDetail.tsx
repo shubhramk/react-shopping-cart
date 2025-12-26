@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { CircleArrowLeft } from "lucide-react";
 import ProductQuantity from "../product-card/ProductQuantity";
@@ -7,7 +7,7 @@ import type { RootState } from "../../../store";
 import type { ProductItem } from "../../../models/product-item.model";
 import ProductLoader from "./ProductLoader";
 
-const ProductDetail: React.FC = () => {
+const ProductDetail: React.FC = () => {  
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [quantity, setQuantity] = useState(1);

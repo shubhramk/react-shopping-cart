@@ -1,17 +1,18 @@
 import { Navigate, Outlet } from "react-router-dom";
-import type { UserDetail } from "../../models/user-detail.model";
+import { useContext } from "react";
+import { UserContext } from "../../common/context/context";
 
 type ProtectedRouteProps = {
-  user: UserDetail | null;
   redirectPath?: string;
   children?: React.ReactNode;
 };
 
 const ProtectedRoute = ({
-  user,
   redirectPath = "/",
   children,
 }: ProtectedRouteProps) => {
+  const user = useContext(UserContext); // get user from context
+
   if (!user) {
     return <Navigate to={redirectPath} replace />;
   }
