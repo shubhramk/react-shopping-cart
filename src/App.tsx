@@ -10,6 +10,7 @@ import UnAuthorized from "./containers/error/UnAuthorized";
 import React, { Suspense, useState } from "react";
 import ProductLoader from "./containers/product/product-detail/ProductLoader";
 import { UserContext } from "./common/context/context";
+import ErrorBoundary from "./hoc/error-boundary/ErrorBoundary";
 
 function App() {
   const [user, setUser] = useState({ name: "John Doe" });
@@ -32,7 +33,16 @@ function App() {
         <Routes>
           <Route element={<Layout />}>
             <Route index element={<Home />} />
-            <Route path="products" element={<ProductList />} />
+
+            
+            <Route
+              path="products"
+              element={
+                <ErrorBoundary>
+                  <ProductList />
+                </ErrorBoundary>
+              }
+            />
 
             <Route
               path="products/:id"
