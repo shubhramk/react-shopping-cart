@@ -1,7 +1,7 @@
 import { Home, SearchX } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-const ErrorPage: React.FC = () => {
+const UnAuthorized: React.FC = () => {
   const navigate = useNavigate();
 
   return (
@@ -12,13 +12,11 @@ const ErrorPage: React.FC = () => {
           <SearchX className="h-8 w-8 text-blue-600" />
         </div>
 
-        <h1 className="text-5xl font-bold text-gray-900 mb-2">404</h1>
-
         <h2 className="text-lg font-semibold text-gray-800 mb-2">
-          Page not found
+          Authorized Access Required
         </h2>
         <p className="text-sm text-gray-500 mb-8">
-          The page you are looking for doesn’t exist or may have been moved.
+          You do not have permission to view this page. Please log in to continue.
         </p>
 
         <div className="flex justify-center gap-4">
@@ -35,4 +33,4 @@ const ErrorPage: React.FC = () => {
   );
 };
 
-export default ErrorPage;
+export default UnAuthorized;
