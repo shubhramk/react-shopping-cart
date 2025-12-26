@@ -7,26 +7,45 @@ import ProductDetail from './containers/product/product-detail/ProductDetail';
 import ErrorPage from './containers/error/ErrorPage';
 import ProductList from './containers/product/product-list/ProductList';
 import ProtectedRoute from './hoc/protected-route/ProtectedRoute';
-import Payment from './containers/order/payment/Payment';
 import UnAuthorized from './containers/error/UnAuthorized';
+import React, { Suspense } from 'react';
 
-const user =  null;//{ name: "John Doe" };
+const user =  { name: "John Doe" };
 function App() {
+
+  //const Payment = React.lazy(() => import("./containers/order/payment/Payment"));
+  // Simulate a delay for loading the Payment component to show Suspense in action
+  const Payment = React.lazy(
+    () =>
+      new Promise((resolve) => {
+        setTimeout(() => resolve(import("./containers/order/payment/Payment")), 2000);
+      })
+  );
+
+
+
   return (
-    <Routes>
-      <Route element={<Layout />}>
-        <Route index element={<Home />} />
-        <Route path="products" element={<ProductList />} />
-        <Route path="products/:id" element={<ProductDetail />} />
-        <Route path="payment" element={
-          <ProtectedRoute user={user} redirectPath='/unauthorized'>
-            <Payment />
-          </ProtectedRoute>
-        } />
-        <Route path="unauthorized" element={<UnAuthorized />} />
-        <Route path="/*" element={<ErrorPage />} />
-      </Route>
-    </Routes>
+    <Suspense fallback={<p>Loading...</p>}>
+      <Routes>
+          <Route element={<Layout />}>
+          <Route index element={<Home />} />
+          <Route path="products" element={<ProductList />} />
+          <Route path="products/:id" element={<ProductDetail />} />
+          <Route
+            path="payment"
+            element={
+              <ProtectedRoute user={user} redirectPath="/unauthorized">
+                <Suspense fallback={<p>Loading...</p>}>
+                      <Payment />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          <Route path="unauthorized" element={<UnAuthorized />} />
+          <Route path="/*" element={<ErrorPage />} />
+        </Route>
+      </Routes>  
+    </Suspense>
   );
 }
 
