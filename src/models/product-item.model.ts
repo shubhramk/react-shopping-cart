@@ -8,3 +8,7 @@ export interface ProductItem {
   category: Category;
   images: string[];
 }
+
+export interface ProductCardProps {
+  product: ProductItem;
+}

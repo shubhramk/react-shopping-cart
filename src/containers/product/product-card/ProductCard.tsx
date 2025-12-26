@@ -1,20 +1,24 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import type { ProductItem } from "../../../models/product-item.model";
+import type { ProductCardProps } from "../../../models/product-item.model";
 import ProductQuantity from "./ProductQuantity";
+import { CartService } from "../../../common/services/cart.service";
 
-const ProductCard: React.FC<{ product: ProductItem }> = ({ product }) => {
+
+
+const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const navigate = useNavigate();
-  const truncateText = (text: string, maxLength = 40) => {
-    if (!text) return "";
-    return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
+  const [quantity, setQuantity] = useState<number>(1);
+
+  const truncateText = (text: string, maxLength = 40) =>
+    text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
+
+  const handleAddToCart = () => {
+    CartService.addToCart(product, quantity);
   };
-  const [quantity, setQuantity] = useState(1);
-  
+
   return (
-    <div
-      className="bg-white border rounded-xl p-4 shadow-sm hover:shadow-md transition"
-    >
+    <div className="bg-white border rounded-xl p-4 shadow-sm hover:shadow-md transition">
       <div
         className="bg-gray-100 rounded-lg h-40 flex items-center justify-center mb-4 cursor-pointer"
         onClick={() => navigate(`/products/${product.id}`)}
@@ -59,6 +63,7 @@ const ProductCard: React.FC<{ product: ProductItem }> = ({ product }) => {
         <ProductQuantity value={quantity} onChange={setQuantity} />
 
         <button
+          onClick={handleAddToCart}
           className="flex-1 h-10 rounded-lg border border-blue-900 text-blue-900
                text-sm font-semibold hover:bg-blue-900 hover:text-white transition"
         >
