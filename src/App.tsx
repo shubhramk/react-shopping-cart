@@ -34,7 +34,6 @@ function App() {
           <Route element={<Layout />}>
             <Route index element={<Home />} />
 
-            
             <Route
               path="products"
               element={

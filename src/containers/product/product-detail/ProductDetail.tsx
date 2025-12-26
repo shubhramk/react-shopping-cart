@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 import type { RootState } from "../../../store";
 import type { ProductItem } from "../../../models/product-item.model";
 import ProductLoader from "./ProductLoader";
+import { useDocumentTitle } from "../../../common/hooks/DocumentTitle";
 
 const ProductDetail: React.FC = () => {  
   const { id } = useParams<{ id: string }>();
@@ -20,6 +21,7 @@ const ProductDetail: React.FC = () => {
   const loading = useSelector((state: RootState) => state.products.loading);
   const error = useSelector((state: RootState) => state.products.error);
   const totalPrice = product ? product.price * quantity : 0;
+  const title = useDocumentTitle(product?.title || "Product Detail");
 
   if (loading) {
     return (
@@ -39,6 +41,7 @@ const ProductDetail: React.FC = () => {
   }
 
   return (
+ 
     <section className="py-12 bg-gray-50">
       <div className="container mx-auto px-4">
         <div className="flex justify-end mb-4">
