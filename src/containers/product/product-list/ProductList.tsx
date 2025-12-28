@@ -18,6 +18,7 @@ const ProductList: React.FC = () => {
   );
 
   const products = React.useMemo(() => {
+    //throw new Error('Component crashed');
     let filtered = list;
 
     // 🔍 Search filter
@@ -48,7 +49,7 @@ const ProductList: React.FC = () => {
   );
 
   if (error && !loading) {
-    return (
+    return ( 
       <section className="py-20 bg-gray-50">
         <div className="container mx-auto px-4">
           <div className="max-w-md mx-auto bg-white rounded-2xl shadow-sm p-10 text-center">

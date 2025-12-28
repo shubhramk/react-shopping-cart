@@ -6,12 +6,16 @@ const ProductQuantity: React.FC<ProductQuantityProps> = ({
   value,
   min = MIN_QTY,
   max = MAX_QTY,
+  onQuantityChange,
   onChange,
 }) => {
   return (
     <div className="flex items-center rounded-lg border bg-gray-50 px-2 py-1">
       <button
-        onClick={() => onChange?.(Math.max(value - 1, min))}
+        onClick={() =>{
+          onQuantityChange?.({ type: 'decrement' });
+          onChange?.(Math.max(value - 1, min));
+        }}
         disabled={value === min}
         className="h-8 w-8 flex items-center justify-center rounded-md text-gray-500 hover:bg-gray-200 disabled:opacity-40 cursor-pointer"
       >
@@ -23,7 +27,10 @@ const ProductQuantity: React.FC<ProductQuantityProps> = ({
       </span>
 
       <button
-        onClick={() => onChange?.(Math.min(value + 1, max))}
+        onClick={() =>{ 
+          onQuantityChange?.({ type: 'increment' });
+          onChange?.(Math.min(value + 1, max));
+        }}
         disabled={value === max}
         className="h-8 w-8 flex items-center justify-center rounded-md text-gray-500 hover:bg-gray-200 disabled:opacity-40 cursor-pointer"
       >

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import type { ProductCardProps } from "../../../models/product-item.model";
 import ProductQuantity from "./ProductQuantity";
@@ -11,6 +11,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   // ✅ Read quantity ONCE from cart
   const cartQty = CartService.getItemQuantity(product.id);
 
+  /* This state manages the quantity of the product to be added to the cart */
   const [quantity, setQuantity] = useState<number>(
     cartQty > 0 ? cartQty : 1
   );
@@ -24,6 +25,25 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     setQuantity(qtyInCart > 0 ? qtyInCart : 1);
   }, [product.id]);
 
+  //START - different approach using useReducer - START
+  const quantityReducer = (state: { count: number }, action: { type: string }) => {
+    switch (action.type) {
+      case 'increment':
+        return { count: state.count + 1 };
+
+      case 'decrement':
+        return { count: state.count - 1 };
+
+      case 'reset':
+        return { count: 0 };
+
+      default:
+        return state;
+    }
+  }
+  const [quantityCnt, dispatch] = useReducer(quantityReducer, { count: 1 });
+  //END - different approach using useReducer - END
+  
   const truncateText = (text: string, maxLength = 40) =>
     text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
 
@@ -114,6 +134,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         <div className="flex items-center gap-3">
           <ProductQuantity
             value={quantity}
+            onQuantityChange={dispatch}
             onChange={(val) =>
               setQuantity(Math.max(MIN_QTY, Math.min(MAX_QTY, val)))
             }
