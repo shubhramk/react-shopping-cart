@@ -14,6 +14,7 @@ const CartInfo: React.FC = () => {
   const navigate = useNavigate();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [confirmAction, setConfirmAction] = useState<ConfirmAction>(null);
+  const [showLogin, setShowLogin] = useState(false);
 
   useEffect(() => {
     setCartItems(CartService.getCart());
@@ -142,11 +143,12 @@ const CartInfo: React.FC = () => {
             </div>
 
             <button
+              onClick={() => setShowLogin(true)}
               className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 rounded-lg
-                         font-semibold hover:from-blue-600 hover:to-purple-700 transition cursor-pointer"
+             font-semibold hover:from-blue-600 hover:to-purple-700 transition cursor-pointer"
               disabled={cartItems.length === 0}
             >
-              Checkout
+              Proceed to Checkout
             </button>
           </div>
         </div>
@@ -202,6 +204,93 @@ const CartInfo: React.FC = () => {
                   Confirm
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showLogin && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          {/* Overlay */}
+          <div
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            onClick={() => setShowLogin(false)}
+          />
+
+          {/* Modal */}
+          <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden">
+            {/* HEADER */}
+            <div className="bg-gradient-to-r from-blue-500 to-purple-600 px-6 py-5">
+              <h2 className="text-xl font-bold text-white">Secure Checkout</h2>
+              <p className="text-sm text-blue-100">
+                Login to complete your purchase
+              </p>
+            </div>
+
+            {/* BODY */}
+            <div className="p-6 space-y-6">
+              {/* Order Preview */}
+              <div className="flex justify-between items-center bg-gray-50 rounded-xl p-4 border">
+                <span className="text-sm font-medium text-gray-600">
+                  Cart Total
+                </span>
+                <span className="text-lg font-bold text-white bg-gradient-to-r from-blue-500 to-purple-600 px-4 py-1 rounded-full shadow">
+                  ${totalAmount.toFixed(2)}
+                </span>
+              </div>
+
+              {/* Login Form */}
+              <div className="space-y-4">
+                <div>
+                  <label className="text-sm font-medium text-gray-700">
+                    Email address
+                  </label>
+                  <input
+                    type="email"
+                    placeholder="you@example.com"
+                    className="mt-1 w-full rounded-lg border px-3 py-2
+                         focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium text-gray-700">
+                    Password
+                  </label>
+                  <input
+                    type="password"
+                    placeholder="••••••••"
+                    className="mt-1 w-full rounded-lg border px-3 py-2
+                         focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+
+              {/* ACTIONS */}
+              <div className="flex gap-3 pt-2">
+                <button
+                  onClick={() => setShowLogin(false)}
+                  className="flex-1 py-2 rounded-lg border text-gray-700 font-semibold
+                       hover:bg-gray-100 transition"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  className="flex-1 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600
+                       text-white font-semibold hover:from-blue-600 hover:to-purple-700 transition"
+                >
+                  Login & Continue
+                </button>
+              </div>
+
+              {/* FOOTER */}
+              <p className="text-xs text-center text-gray-500">
+                New here?{" "}
+                <span className="text-blue-600 font-semibold cursor-pointer hover:underline">
+                  Create an account
+                </span>
+              </p>
             </div>
           </div>
         </div>
