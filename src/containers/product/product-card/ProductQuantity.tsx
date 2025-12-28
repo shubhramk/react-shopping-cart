@@ -1,10 +1,11 @@
 import { Minus, Plus } from "lucide-react";
 import type { ProductQuantityProps } from "../../../models/product-quantity.modal";
+import { MAX_QTY, MIN_QTY } from "../../../common/constants/constants";
 
 const ProductQuantity: React.FC<ProductQuantityProps> = ({
   value,
-  min = 1,
-  max = 10,
+  min = MIN_QTY,
+  max = MAX_QTY,
   onChange,
 }) => {
   return (
@@ -12,7 +13,7 @@ const ProductQuantity: React.FC<ProductQuantityProps> = ({
       <button
         onClick={() => onChange?.(Math.max(value - 1, min))}
         disabled={value === min}
-        className="h-8 w-8 flex items-center justify-center rounded-md text-gray-500 hover:bg-gray-200 disabled:opacity-40"
+        className="h-8 w-8 flex items-center justify-center rounded-md text-gray-500 hover:bg-gray-200 disabled:opacity-40 cursor-pointer"
       >
         <Minus size={14} />
       </button>
@@ -24,7 +25,7 @@ const ProductQuantity: React.FC<ProductQuantityProps> = ({
       <button
         onClick={() => onChange?.(Math.min(value + 1, max))}
         disabled={value === max}
-        className="h-8 w-8 flex items-center justify-center rounded-md text-gray-500 hover:bg-gray-200 disabled:opacity-40"
+        className="h-8 w-8 flex items-center justify-center rounded-md text-gray-500 hover:bg-gray-200 disabled:opacity-40 cursor-pointer"
       >
         <Plus size={14} />
       </button>

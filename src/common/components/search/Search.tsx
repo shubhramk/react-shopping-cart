@@ -101,7 +101,7 @@ const SearchBar: React.FC = () => {
 
         <button
           onClick={handleSearch}
-          className="text-gray-500 p-1 hover:text-blue-900 transition-colors"
+          className="text-gray-500 p-1 hover:text-blue-900 transition-colors cursor-pointer"
           aria-label="Search"
         >
           <Search size={20} />

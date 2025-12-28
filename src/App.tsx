@@ -9,6 +9,7 @@ import ProductList from './containers/product/product-list/ProductList';
 import ProtectedRoute from './hoc/protected-route/ProtectedRoute';
 import Payment from './containers/order/payment/Payment';
 import UnAuthorized from './containers/error/UnAuthorized';
+import CartInfo from './common/components/cart-info/CartInfo';
 
 const user =  null;//{ name: "John Doe" };
 function App() {
@@ -18,6 +19,7 @@ function App() {
         <Route index element={<Home />} />
         <Route path="products" element={<ProductList />} />
         <Route path="products/:id" element={<ProductDetail />} />
+        <Route path="cart-info" element={<CartInfo />} />
         <Route path="payment" element={
           <ProtectedRoute user={user} redirectPath='/unauthorized'>
             <Payment />

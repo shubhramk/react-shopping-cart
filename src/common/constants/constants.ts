@@ -7,3 +7,6 @@ export const AUTH_TOKEN = 'AUTH_TOKEN';
 export const AUTH_EXPIRATION = 'AUTH_EXPIRATION';
 
 export const DEFAULT_EXPIRATION_SEC = 30 * 60;
+
+export const MIN_QTY = 1;
+export const MAX_QTY = 10;

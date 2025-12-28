@@ -1,25 +1,48 @@
-import React, { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { CircleArrowLeft } from "lucide-react";
 import ProductQuantity from "../product-card/ProductQuantity";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../store";
 import type { ProductItem } from "../../../models/product-item.model";
+import { CartService } from "../../../common/services/cart.service";
 
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
-  const [quantity, setQuantity] = useState(1);
-  const product = useSelector((state: RootState) => {
-    return state?.products.list.find(
-      (product: ProductItem) => Number(product.id) === Number(id)
-    );
-  });
-  const [activeImage, setActiveImage] = useState<string>(product?.images?.[0] || "");
+
+  const product = useSelector((state: RootState) =>
+    state.products.list.find((p: ProductItem) => Number(p.id) === Number(id))
+  );
+
   const loading = useSelector((state: RootState) => state.products.loading);
   const error = useSelector((state: RootState) => state.products.error);
+
+  const [quantity, setQuantity] = useState<number>(1);
+  const [activeImage, setActiveImage] = useState<string>("");
+  const [inCart, setInCart] = useState<boolean>(false);
+
+  // ✅ Sync with cart when product loads
+  useEffect(() => {
+    if (!product) return;
+
+    const cartQty = CartService.getItemQuantity(product.id);
+
+    setQuantity(cartQty > 0 ? cartQty : 1);
+    setInCart(cartQty > 0);
+    setActiveImage(product.images?.[0] || "");
+  }, [product]);
+
   const totalPrice = product ? product.price * quantity : 0;
 
+  // ✅ ALWAYS set absolute quantity
+  const handleAddToCart = () => {
+    if (!product) return;
+
+    CartService.setQuantity(product, quantity);
+    setInCart(true);
+  };
+
+  /* ---------------- LOADING ---------------- */
   if (loading) {
     return (
       <section className="py-12 bg-gray-50">
@@ -37,6 +60,7 @@ const ProductDetail: React.FC = () => {
     );
   }
 
+  /* ---------------- ERROR ---------------- */
   if ((error || !product) && !loading) {
     return (
       <section className="py-12 bg-gray-50 text-center">
@@ -51,20 +75,26 @@ const ProductDetail: React.FC = () => {
   return (
     <section className="py-12 bg-gray-50">
       <div className="container mx-auto px-4">
+        {/* Back Button */}
         <div className="flex justify-end mb-4">
           <button
-            onClick={() => navigate("/products")}
-            className="inline-flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-blue-900 cursor-pointer"
+            onClick={() => window.history.back()}
+            className="inline-flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-blue-900 cursor-pointer transition"
           >
             <CircleArrowLeft /> Back
           </button>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-          <div className="bg-white border rounded-xl p-6">
+          {/* LEFT – Images */}
+          <div
+            className={`bg-white border rounded-xl p-6 shadow-sm hover:shadow-md transition ${
+              inCart ? "ring-2 ring-blue-200" : ""
+            }`}
+          >
             <div className="flex items-center justify-center h-96 bg-gray-100 rounded-lg mb-4">
               <img
-                src={activeImage || product?.images?.[0]}
+                src={activeImage}
                 alt={product?.title}
                 className="max-h-full object-contain"
               />
@@ -75,10 +105,9 @@ const ProductDetail: React.FC = () => {
                 <button
                   key={index}
                   onClick={() => setActiveImage(img)}
-                  className={`border rounded-lg p-1 min-w-[70px] h-[70px] flex items-center justify-center transition
-                  ${
+                  className={`border rounded-lg p-1 min-w-[70px] h-[70px] flex items-center justify-center transition ${
                     activeImage === img
-                      ? "border-blue-900"
+                      ? "border-blue-900 ring-2 ring-blue-200"
                       : "border-gray-200 hover:border-blue-400"
                   }`}
                 >
@@ -92,7 +121,12 @@ const ProductDetail: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-white border rounded-xl p-6 shadow-sm">
+          {/* RIGHT – Details */}
+          <div
+            className={`bg-white border rounded-xl p-6 shadow-sm hover:shadow-md transition ${
+              inCart ? "ring-2 ring-blue-200" : ""
+            }`}
+          >
             <h1 className="text-2xl font-bold text-gray-900 mb-4">
               {product?.title}
             </h1>
@@ -111,27 +145,29 @@ const ProductDetail: React.FC = () => {
               </span>
             </div>
 
+            {/* Quantity */}
             <div className="mt-6 pb-6 border-b">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium text-gray-700">
                   Quantity
                 </span>
-
                 <ProductQuantity value={quantity} onChange={setQuantity} />
               </div>
             </div>
 
+            {/* Actions */}
             <div className="mt-6 flex gap-4">
               <button
+                onClick={handleAddToCart}
                 className="flex-1 border-2 border-blue-900 text-blue-900 py-3 rounded-lg
-               font-semibold hover:bg-blue-900 hover:text-white transition"
+                           font-semibold hover:bg-blue-900 hover:text-white cursor-pointer transition"
               >
-                Add to Cart
+                {inCart ? "Update Cart" : "Add to Cart"}
               </button>
 
               <button
-                className="flex-1 bg-blue-900 text-white py-3 rounded-lg font-semibold
-               hover:bg-blue-800 transition"
+                className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 rounded-lg font-semibold
+                           hover:from-blue-600 hover:to-purple-700 cursor-pointer transition"
               >
                 Buy Now
               </button>
