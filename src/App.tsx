@@ -14,7 +14,7 @@ import ErrorBoundary from "./hoc/error-boundary/ErrorBoundary";
 import CartInfo from './common/components/cart-info/CartInfo';
 
 function App() {
-  const [user, setUser] = useState({ name: "John Doe" });
+  const [user, setUser] = useState(null);
 
   //const Payment = React.lazy(() => import("./containers/order/payment/Payment"));
   // Simulate a delay for loading the Payment component to show Suspense in action
@@ -30,7 +30,7 @@ function App() {
 
   return (
     <Suspense fallback={<p>Loading...</p>}>
-      <UserContext.Provider value={user}>
+      <UserContext.Provider value={{user, setUser}}>
         <Routes>
           <Route element={<Layout />}>
             <Route index element={<Home />} />

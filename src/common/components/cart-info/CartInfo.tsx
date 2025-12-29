@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext, useActionState } from "react";
 import { Trash2 } from "lucide-react";
 import type { CartItem } from "../../../models/cart-item.model";
 import { CartService } from "../../services/cart.service";
 import ProductQuantity from "../../../containers/product/product-card/ProductQuantity";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
+import { UserContext } from "../../context/context";
 
 type ConfirmAction =
   | { type: "item"; item: CartItem }
@@ -15,6 +16,8 @@ const CartInfo: React.FC = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [confirmAction, setConfirmAction] = useState<ConfirmAction>(null);
   const [showLogin, setShowLogin] = useState(false);
+  const {user,setUser} = useContext(UserContext);
+  const [state, formAction, pending] = useActionState(loginAction, null);
 
   useEffect(() => {
     setCartItems(CartService.getCart());
@@ -29,6 +32,31 @@ const CartInfo: React.FC = () => {
     (sum, item) => sum + item.product.price * item.quantity,
     0
   );
+
+  const checkout = () => {
+    if (!user) {
+      setShowLogin(true);   
+    } else {
+      navigate("/payment");
+    }   
+  }
+
+ async function loginAction(prevState:any, formData:any)  {
+    console.log([...formData.entries(),formData.get("email"),formData.get("password")]);
+    const email = formData.get("email");
+    const password = formData.get("password");
+    setUser({ name: email });
+    navigate("/payment");
+    /*
+    const res = await fetch("/api/login", {
+      method: "POST",
+      body: JSON.stringify({ email, password }),
+      headers: { "Content-Type": "application/json" },
+    });
+
+    if (!res.ok) return "Login failed";
+    return "Logged in successfully!";*/
+  }
 
   return (
     <section className="py-12 bg-gray-50">
@@ -143,7 +171,7 @@ const CartInfo: React.FC = () => {
             </div>
 
             <button
-              onClick={() => setShowLogin(true)}
+              onClick={() => checkout()}
               className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 rounded-lg
              font-semibold hover:from-blue-600 hover:to-purple-700 transition cursor-pointer"
               disabled={cartItems.length === 0}
@@ -209,7 +237,8 @@ const CartInfo: React.FC = () => {
         </div>
       )}
 
-      {showLogin && (
+      {showLogin && !user && (
+         <form action={formAction}>
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           {/* Overlay */}
           <div
@@ -247,6 +276,7 @@ const CartInfo: React.FC = () => {
                   </label>
                   <input
                     type="email"
+                     name="email"
                     placeholder="you@example.com"
                     className="mt-1 w-full rounded-lg border px-3 py-2
                          focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -259,6 +289,7 @@ const CartInfo: React.FC = () => {
                   </label>
                   <input
                     type="password"
+                    name="password"
                     placeholder="••••••••"
                     className="mt-1 w-full rounded-lg border px-3 py-2
                          focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -294,7 +325,10 @@ const CartInfo: React.FC = () => {
             </div>
           </div>
         </div>
-      )}
+        </form>
+        )
+        
+        }
     </section>
   );
 };

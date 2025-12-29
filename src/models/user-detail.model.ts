@@ -1,3 +1,4 @@
 export interface UserDetail {
-  name: string;
+  name?: string;
+  email?: string;
 }
