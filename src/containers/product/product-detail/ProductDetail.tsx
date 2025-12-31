@@ -1,59 +1,61 @@
-import React, { useEffect, useContext, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { CircleArrowLeft } from "lucide-react";
 import ProductQuantity from "../product-card/ProductQuantity";
-import { useSelector } from "react-redux";
-import type { RootState } from "../../../store";
+import { useSelector, useDispatch } from "react-redux";
 import type { ProductItem } from "../../../models/product-item.model";
-import { CartService } from "../../../common/services/cart.service";
 import ProductLoader from "./ProductLoader";
 import { useDocumentTitle } from "../../../common/hooks/DocumentTitle";
+import type { AppDispatch, RootState } from "../../../store";
+import { addInCart } from "../../../store/cart.slice";
 
-const ProductDetail: React.FC = () => {  
+const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const dispatch = useDispatch<AppDispatch>();
 
   const product = useSelector((state: RootState) =>
     state.products.list.find((p: ProductItem) => Number(p.id) === Number(id))
   );
-
   const loading = useSelector((state: RootState) => state.products.loading);
   const error = useSelector((state: RootState) => state.products.error);
 
-  const [quantity, setQuantity] = useState<number>(1);
-  const [activeImage, setActiveImage] = useState<string>("");
-  const [inCart, setInCart] = useState<boolean>(false);
+  const cartItems = useSelector((state: RootState) => state.cart.list);
+  const cartItem = product
+    ? cartItems.find((item) => item.product.id === product.id)
+    : undefined;
 
-  // ✅ Sync with cart when product loads
+  const [quantity, setQuantity] = useState<number>(
+    cartItem ? cartItem.quantity : 1
+  );
+  const [activeImage, setActiveImage] = useState<string>(
+    product?.images?.[0] || ""
+  );
+  const [inCart, setInCart] = useState<boolean>(!!cartItem);
+
+  // Sync with cart when product or cart changes
   useEffect(() => {
     if (!product) return;
-
-    const cartQty = CartService.getItemQuantity(product.id);
-
-    setQuantity(cartQty > 0 ? cartQty : 1);
-    setInCart(cartQty > 0);
+    const currentItem = cartItems.find(
+      (item) => item.product.id === product.id
+    );
+    setInCart(!!currentItem);
+    setQuantity(currentItem ? currentItem.quantity : 1);
     setActiveImage(product.images?.[0] || "");
-  }, [product]);
+  }, [product, cartItems]);
 
   const totalPrice = product ? product.price * quantity : 0;
-  const title = useDocumentTitle(product?.title || "Product Detail");
+  useDocumentTitle(product?.title || "Product Detail");
 
-  // ✅ ALWAYS set absolute quantity
   const handleAddToCart = () => {
     if (!product) return;
 
-    CartService.setQuantity(product, quantity);
+    dispatch(addInCart({ product, quantity }));
     setInCart(true);
   };
 
-  /* ---------------- LOADING ---------------- */
-  if (loading) {
-    return (
-     <ProductLoader />
-    );
-  }
+  if (loading) return <ProductLoader />;
 
-  /* ---------------- ERROR ---------------- */
-  if ((error || !product) && !loading) {
+  if ((error || !product) && !loading)
     return (
       <section className="py-12 bg-gray-50 text-center">
         <h2 className="text-xl font-semibold text-red-600 mb-2">
@@ -62,11 +64,9 @@ const ProductDetail: React.FC = () => {
         <p className="text-gray-600">{error}</p>
       </section>
     );
-  }
 
   return (
- 
-    <section className="py-12 bg-gray-50">
+    <section className="py-30 bg-gray-50">
       <div className="container mx-auto px-4">
         {/* Back Button */}
         <div className="flex justify-end mb-4">
@@ -123,11 +123,9 @@ const ProductDetail: React.FC = () => {
             <h1 className="text-2xl font-bold text-gray-900 mb-4">
               {product?.title}
             </h1>
-
             <p className="text-xl font-semibold text-blue-900 mb-4">
               ${totalPrice.toFixed(2)}
             </p>
-
             <p className="text-gray-600 mb-6 leading-relaxed">
               {product?.description}
             </p>
@@ -152,17 +150,10 @@ const ProductDetail: React.FC = () => {
             <div className="mt-6 flex gap-4">
               <button
                 onClick={handleAddToCart}
-                className="flex-1 border-2 border-blue-900 text-blue-900 py-3 rounded-lg
-                           font-semibold hover:bg-blue-900 hover:text-white cursor-pointer transition"
+                className="flex-1 border-2 border-blue-900 text-blue-900 py-3 rounded-lg font-semibold
+                           hover:bg-blue-900 hover:text-white cursor-pointer transition"
               >
                 {inCart ? "Update Cart" : "Add to Cart"}
-              </button>
-
-              <button
-                className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 rounded-lg font-semibold
-                           hover:from-blue-600 hover:to-purple-700 cursor-pointer transition"
-              >
-                Buy Now
               </button>
             </div>
           </div>

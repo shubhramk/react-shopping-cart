@@ -12,6 +12,7 @@ import ProductLoader from "./containers/product/product-detail/ProductLoader";
 import { UserContext } from "./common/context/context";
 import ErrorBoundary from "./hoc/error-boundary/ErrorBoundary";
 import CartInfo from './common/components/cart-info/CartInfo';
+import Loading from "./containers/loading/Loading";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -29,7 +30,7 @@ function App() {
   );
 
   return (
-    <Suspense fallback={<p>Loading...</p>}>
+    <Suspense fallback={<Loading />}>
       <UserContext.Provider value={{user, setUser}}>
         <Routes>
           <Route element={<Layout />}>
@@ -58,7 +59,7 @@ function App() {
               path="payment"
               element={
                 <ProtectedRoute redirectPath="/unauthorized">
-                  <Suspense fallback={<p>Loading...</p>}>
+                  <Suspense fallback={<Loading />}>
                     <Payment />
                   </Suspense>
                 </ProtectedRoute>

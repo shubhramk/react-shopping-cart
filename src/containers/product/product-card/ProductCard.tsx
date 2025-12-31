@@ -1,55 +1,39 @@
-import React, { useEffect, useReducer, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import type { ProductCardProps } from "../../../models/product-item.model";
 import ProductQuantity from "./ProductQuantity";
-import { CartService } from "../../../common/services/cart.service";
 import { MIN_QTY, MAX_QTY } from "../../../common/constants/constants";
+import { addInCart } from "../../../store/cart.slice";
+import type { AppDispatch, RootState } from "../../../store";
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
 
-  // ✅ Read quantity ONCE from cart
-  const cartQty = CartService.getItemQuantity(product.id);
+  // Get current cart state from Redux
+  const cartItems = useSelector((state: RootState) => state.cart.list);
+  const cartItem = cartItems.find((item) => item.product.id === product.id);
 
-  /* This state manages the quantity of the product to be added to the cart */
+  // Set initial quantity from cart or default
   const [quantity, setQuantity] = useState<number>(
-    cartQty > 0 ? cartQty : 1
+    cartItem ? cartItem.quantity : 1
   );
-  const [isInCart, setIsInCart] = useState<boolean>(cartQty > 0);
+  const [isInCart, setIsInCart] = useState<boolean>(!!cartItem);
 
-  // ✅ Sync ONLY when product changes (not on quantity change)
+  // Sync quantity if cart changes externally
   useEffect(() => {
-    const qtyInCart = CartService.getItemQuantity(product.id);
+    const currentItem = cartItems.find((item) => item.product.id === product.id);
+    setIsInCart(!!currentItem);
+    setQuantity(currentItem ? currentItem.quantity : 1);
+  }, [cartItems, product.id]);
 
-    setIsInCart(qtyInCart > 0);
-    setQuantity(qtyInCart > 0 ? qtyInCart : 1);
-  }, [product.id]);
-
-  //START - different approach using useReducer - START
-  const quantityReducer = (state: { count: number }, action: { type: string }) => {
-    switch (action.type) {
-      case 'increment':
-        return { count: state.count + 1 };
-
-      case 'decrement':
-        return { count: state.count - 1 };
-
-      case 'reset':
-        return { count: 0 };
-
-      default:
-        return state;
-    }
-  }
-  const [quantityCnt, dispatch] = useReducer(quantityReducer, { count: 1 });
-  //END - different approach using useReducer - END
-  
+  // Truncate long text
   const truncateText = (text: string, maxLength = 40) =>
     text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
 
-  // ✅ Add / Update cart with ABSOLUTE quantity
   const handleAddToCart = () => {
-    CartService.addToCart(product, quantity);
+    dispatch(addInCart({ product, quantity }));
     setIsInCart(true);
   };
 
@@ -64,9 +48,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           : "bg-gray-200"
       }`}
     >
-      {/* Inner Card */}
       <div className="bg-white rounded-lg p-4 shadow-sm hover:shadow-lg transition relative">
-        {/* Selected Badge */}
         {isInCart && (
           <div className="absolute top-2 right-2 bg-gradient-to-r from-green-400 to-blue-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-md">
             In Cart
@@ -106,15 +88,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
         {/* Price Section */}
         <div className="mb-4 space-y-2">
-          {/* Unit Price */}
           <div className="flex items-center justify-between text-sm text-gray-500">
             <span>Unit price</span>
-            <span className="font-semibold text-gray-800">
-              ${unitPrice}
-            </span>
+            <span className="font-semibold text-gray-800">${unitPrice}</span>
           </div>
 
-          {/* Total Price */}
           <div className="flex items-center justify-between bg-gradient-to-r from-blue-500 to-purple-600
                           text-white px-3 py-2 rounded-lg shadow-md">
             <span className="text-sm font-medium">Total</span>
@@ -134,7 +112,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         <div className="flex items-center gap-3">
           <ProductQuantity
             value={quantity}
-            onQuantityChange={dispatch}
             onChange={(val) =>
               setQuantity(Math.max(MIN_QTY, Math.min(MAX_QTY, val)))
             }

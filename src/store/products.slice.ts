@@ -24,7 +24,7 @@ const initialState: Products = {
 export const productsSlice = createSlice({
   name: "products",
   initialState,
-  reducers: {     
+  reducers: {  
     showCategory: (state) => {
       const uniqueMap = new Map<number, Category>();
       state?.list.forEach((product: { category: Category }) => {
