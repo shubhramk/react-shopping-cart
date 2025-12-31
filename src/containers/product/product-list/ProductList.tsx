@@ -117,7 +117,7 @@ const ProductList: React.FC = () => {
   }
 
   return (
-    <section className="py-12 bg-gray-50">
+    <section className="py-25 bg-gray-50">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-gray-900">Products</h2>
